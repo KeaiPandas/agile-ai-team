@@ -7,3 +7,9 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# OpenClaw internal
+.openclaw/
+
+# Private user info
+**/USER.md
