@@ -1,83 +1,108 @@
 ---
 name: dev-git-operations
-description: Dev Agent Git 操作技能。执行 commit、branch、PR、merge 等 Git 版本控制操作，维护代码仓库的整洁和规范。
+description: 管理 Git 操作，包括分支管理、提交规范、PR 创建和合并
 ---
 
-# Dev Agent - Git 操作技能
+# Git 操作
 
 ## 概述
 
-本技能指导 Dev Agent 执行各类 Git 操作，确保版本控制的规范性和代码仓库的整洁。良好的 Git 操作习惯不仅让项目历史清晰可追溯，还能有效避免代码冲突和丢失。Dev Agent 应成为团队的 Git 最佳实践守护者。
+Dev Agent 管理项目的 Git 操作，确保代码版本控制规范统一。包括分支命名、提交信息格式、PR 创建和合并策略。每个 Task 对应独立的 feature 分支，通过 PR 合并到主分支。
+
+**在流程中的位置：** 贯穿整个开发流程，代码生成后提交 → 代码审查通过后合并
 
 ## 触发条件
 
-- 需要提交代码变更（commit）
-- 需要创建或管理分支（branch）
-- 需要创建 Pull Request / Merge Request
-- 收到"commit"、"push"、"PR"、"git"、"合并"、"分支"等指令
-- Sprint 结束需要合并代码到主分支
-- 需要解决代码冲突
-
-## 流程
-
-### 1. 分支管理
-
-- **分支命名规范**: 遵循团队约定的命名规则，如 `feature/xxx`、`bugfix/xxx`、`hotfix/xxx`
-- **创建分支**: 从最新的 develop/main 分支创建功能分支
-- **保持分支更新**: 定期将主分支的变更合并到功能分支，减少冲突
-
-### 2. Commit 规范
-
-- 使用语义化 commit message，推荐格式：
-  ```
-  <type>(<scope>): <subject>
-
-  <body>
-  ```
-- **type 类型**: feat | fix | docs | style | refactor | perf | test | chore
-- **subject**: 简明扼要描述变更内容（不超过 50 字符）
-- **body**: 详细说明变更原因和影响（如有必要）
-- 每次提交保持原子性：一个 commit 只做一件事
-
-### 3. Pull Request 创建
-
-- PR 标题清晰描述变更内容
-- PR 描述包含：变更目的、主要改动、测试方式、关联 Issue
-- 确保本地测试通过后再创建 PR
-- 添加合适的 label 和 reviewer
-
-### 4. 代码合并
-
-- 合并前确认 CI 通过、Review 通过
-- 选择合适的合并策略：merge / squash merge / rebase
-- 合并后及时删除功能分支
-- 同步更新本地仓库
-
-### 5. 冲突解决
-
-- 识别冲突文件
-- 理解双方变更意图
-- 与相关开发者沟通确认解决方案
-- 解决后运行测试确保功能正常
+- 代码生成完成后需要提交
+- Task 审查通过后需要创建 PR 并合并
+- 里程碑发布后需要打 tag
+- 需要回滚或修复
 
 ## 输入
 
-- **代码变更**: 需要提交或合并的代码修改
-- **任务上下文**: 关联的 User Story 或 Issue
-- **团队规范**: 分支命名、commit 格式等团队约定
+- Task ID（`T-XXX`）
+- 代码变更文件列表
+- PR 模板（如有）
+
+## 流程
+
+1. **创建功能分支**：
+   - 从 `main` 或 `develop` 分支拉取最新代码
+   - 创建命名规范的分支：`feature/T-XXX-task-description`
+   - 修复分支：`fix/T-XXX-bug-description`
+
+2. **提交代码**：
+   - 使用规范的 commit message
+   - 每个 Task 至少一个 commit，复杂 Task 可拆分多个 commit
+   - Commit message 格式：`T-XXX: 简要描述`
+   - 每次提交前确认 lint 和类型检查通过
+
+3. **推送到远程**：
+   - 推送功能分支到远程仓库
+   - 触发 CI 流水线（如有）
+
+4. **创建 PR**：
+   - PR 标题：`[T-XXX] Task 描述`
+   - PR 描述包含：变更说明、关联 Task、验收标准检查
+   - 设置审查者（如有）
+
+5. **合并 PR**：
+   - 审查通过后合并（Squash Merge 优先）
+   - 合并后删除功能分支
+   - 更新 `sprint-status.md` 中 Task 状态
+
+6. **版本标签**：
+   - 里程碑完成后打 tag：`v<里程碑版本号>`
+   - 推送 tag 触发部署流程
 
 ## 输出
 
-- **规范的 Git 提交记录**: 清晰、语义化的 commit history
-- **PR/MR**: 格式规范的 Pull Request
-- **合并完成**: 代码成功合并到目标分支
+- Git 分支和提交记录
+- PR 链接（如有远程仓库）
+- 更新后的 `sprint-status.md`
+
+## 文件规范
+
+### Commit Message 格式
+
+```
+T-XXX: 简要描述（50 字以内）
+
+详细说明（可选）：
+- 改动点 1
+- 改动点 2
+```
+
+### PR 模板
+
+```markdown
+## 关联 Task
+- T-XXX: Task 描述
+
+## 变更说明
+简要描述本次变更的内容。
+
+## 验收标准
+- [x] 标准 1
+- [x] 标准 2
+
+## 测试
+- [x] 单元测试通过
+- [x] 本地功能验证通过
+```
+
+### 分支命名规范
+
+```
+feature/T-XXX-简短描述    # 功能开发
+fix/T-XXX-简短描述        # Bug 修复
+refactor/T-XXX-简短描述   # 重构
+```
 
 ## 注意事项
 
-- **不要直接 push 到 main/master**: 始终通过 PR 合并到主分支。
-- **commit 前检查 diff**: 提交前仔细检查变更内容，避免提交调试代码或敏感信息。
-- **不要 force push 公共分支**: 仅在自己的功能分支上使用 force push。
-- **敏感信息不入库**: API Key、密码等敏感信息绝不提交到仓库。
-- **定期清理分支**: 合并后的功能分支及时删除，保持仓库整洁。
-- **写好 commit message**: 未来回头看时，commit message 是最好的文档。
-- **大功能拆分 PR**: 如果变更很大，拆分为多个小 PR，便于 Review 和回滚。
+- **一个 Task 一个分支**：避免在同一个分支上开发多个 Task
+- **提交前检查**：确保 lint 和类型检查通过再提交
+- **不要 force push**：除非确认不会影响其他人
+- **保持 main 分支稳定**：只有通过审查的代码才能合并到 main
+- **Commit 信息可追溯**：每个 Commit 关联 Task ID，方便回溯

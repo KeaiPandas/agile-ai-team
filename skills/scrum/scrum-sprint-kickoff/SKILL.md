@@ -1,88 +1,82 @@
 ---
 name: scrum-sprint-kickoff
-description: Scrum Master Sprint 启动技能。组织 Sprint 启动会议，分配任务给开发者，确保团队对 Sprint 目标和计划达成共识。
+description: 扫描 Backlog，按优先级选取 Task 分配给对应 Agent，创建里程碑状态文件
 ---
 
-# Scrum Master - Sprint 启动技能
+# 里程碑启动
 
 ## 概述
 
-本技能指导 Scrum Master 组织 Sprint 启动（Kickoff）会议，将 PO 确定的 Sprint Backlog 分配给团队成员，确保每个人清楚自己的任务、目标和交付期限。Sprint 启动是团队从"规划"转向"执行"的关键转折点。
+Scrum Master Agent 扫描 Backlog，根据里程碑计划选取 Task，分配给对应的 Agent（dev/qe），并创建 `sprint-status.md` 状态文件。这是里程碑正式开始执行的信号——状态文件就绪后，各 Agent 即可通过读取状态文件领取和执行 Task。
+
+**在流程中的位置：** 里程碑规划（PO）→ **里程碑启动** → 代码生成（Dev）/ 测试用例生成（QE）
 
 ## 触发条件
 
-- 收到 PO 确认的 Sprint Backlog
-- 需要启动新的 Sprint
-- 收到"启动 Sprint"、"开始 Sprint"、"分配任务"、"sprint kickoff"等指令
-- Sprint Planning 完成后进入执行阶段
-- 团队需要明确 Sprint 的目标和分工
-
-## 流程
-
-### 1. 会前准备
-
-- 确认 Sprint 目标和 Sprint Backlog 已由 PO 确定
-- 检查每个 User Story 的验收标准和估算是否就绪
-- 了解团队成员的可用容量和技能特长
-- 准备任务看板（物理或电子）
-- 确认所有成员都能参加启动会议
-
-### 2. 召开 Sprint 启动会议
-
-会议议程（建议 30-60 分钟）：
-
-1. **回顾 Sprint 目标**（5 分钟）
-   - PO 阐述本次 Sprint 的目标（1-3 个）
-   - 说明目标的业务价值和重要性
-
-2. **Sprint Backlog 概览**（10 分钟）
-   - 逐个介绍需要完成的 User Story
-   - 说明 Story 之间的依赖关系
-   - PO 补充背景信息和注意事项
-
-3. **任务分配与认领**（20-30 分钟）
-   - 团队成员根据技能和兴趣认领任务
-   - Scrum Master 协调确保分配均衡
-   - 对有依赖的任务安排执行顺序
-   - 每个任务明确负责人和预计完成时间
-
-4. **确认和答疑**（5-10 分钟）
-   - 团队确认对目标和任务无异议
-   - 解答团队的疑问
-   - 确认协作方式和沟通渠道
-
-### 3. 更新看板
-
-- 将每个 Story 和 Task 添加到 Sprint 看板
-- 设置任务状态（To Do / In Progress / Done）
-- 标注依赖关系和负责人
-- 确保看板信息完整且最新
-
-### 4. 启动后跟进
-
-- 确认所有成员已开始执行任务
-- 监控初始进展是否顺利
-- 及时处理启动阶段出现的 Blocker
-- 确保沟通渠道畅通
+- PO Agent 完成里程碑计划（`sprint/milestone-plan.md` 已就绪）
+- 新里程碑需要启动
+- 当前里程碑需要重新规划分配
 
 ## 输入
 
-- **Sprint 目标**: PO 制定的 Sprint 目标（1-3 个）
-- **Sprint Backlog**: 本次 Sprint 要完成的 User Story 列表
-- **团队信息**: 团队成员的技能、容量和可用性
-- **依赖关系**: Story 之间的依赖和执行顺序
+- `sprint/milestone-plan.md`（里程碑计划，包含目标 Task 列表）
+- `backlog/product-backlog.md`（Backlog 完整信息）
+- 可用 Agent 列表和各自能力
+
+## 流程
+
+1. **读取里程碑计划**：加载 `sprint/milestone-plan.md`，确认包含的 Task
+2. **检查依赖关系**：确认每个 Task 的前置依赖已满足或已包含在范围内
+3. **分配 Task 到 Agent**：
+   - 开发类 Task → `dev` Agent
+   - 测试类 Task → `qe` Agent
+   - 文档类 Task → `dev` Agent（如有专人可分配）
+   - 注意负载均衡，避免单个 Agent 同时承担过多 L 级 Task
+4. **确定执行顺序**：按依赖关系排出推荐执行顺序
+5. **创建状态文件**：写入 `sprint/sprint-status.md`
+6. **更新 Backlog**：将已分配的 Task 状态改为 `in-progress`，更新 Assignee
+7. **发出启动通知**：向相关 Agent 广达里程碑已启动，状态文件已就绪
 
 ## 输出
 
-- **任务分配表**: 每个任务及其负责人
-- **Sprint 看板**: 已初始化的任务看板
-- **Sprint 启动纪要**: 会议记录和共识
+- `sprint/sprint-status.md` — 里程碑状态文件（核心产出）
+- 更新后的 `backlog/product-backlog.md`（Task 状态同步）
+- 启动通知摘要
+
+## 文件规范
+
+### Sprint Status 文件格式
+
+路径：`sprint/sprint-status.md`
+
+```markdown
+# Milestone Status - <里程碑名称>
+
+**开始日期:** YYYY-MM-DD
+**目标:** <一句话目标>
+**状态:** active / completed / cancelled
+
+## 进度
+
+| Task | Assignee | Status | 更新时间 |
+|------|----------|--------|----------|
+| T-001 | dev | in-progress | 2026-03-29 |
+| T-002 | dev | todo | 2026-03-29 |
+| T-003 | qe | todo | 2026-03-29 |
+
+## 推荐执行顺序
+1. T-001 → 2. T-002 → 3. T-003（依赖 T-001/T-002）
+
+## 阻塞项
+- 无
+
+## 备注
+- dev Agent 优先完成 T-001，T-002 可并行启动
+```
 
 ## 注意事项
 
-- **任务认领优于分配**：让开发者主动认领任务，而非强制分配。主动认领的责任感更强。
-- **不要在启动会上做估算**：估算应在 Sprint Planning 中完成，启动会聚焦于分工和执行。
-- **确保目标清晰传达**：每个人都要理解 Sprint 目标是什么，为什么重要。
-- **关注依赖关系**：有依赖的任务要特别关注，避免执行中出现瓶颈。
-- **启动会要高效**：控制在 60 分钟以内，不要变成又一个冗长的讨论会。
-- **会后立即行动**：启动会结束后，团队应该马上可以开始工作，不要有"等待阶段"。
+- **状态文件是唯一协调机制**：Agent 不需要会议同步，全部通过读写状态文件协调
+- **启动前确认计划就绪**：不要在里程碑计划未完成时启动
+- **预留缓冲**：建议里程碑内的 Task 总量不超过 Agent 容量的 80%
+- **阻塞项初始为空**：启动时不应有已知阻塞，如有需在启动前解决
