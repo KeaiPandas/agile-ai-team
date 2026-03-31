@@ -15,84 +15,84 @@
 
 ## 🏗 架构设计
 
+### 角色合并策略
+
+为了简化团队结构、减少沟通层级，本项目对传统 Scrum 角色进行了合并：
+
+- **PO Agent** = 产品负责人 + Scrum Master — 需求管理的同时负责流程调度
+- **Quality Agent** = QE + Release — 质量保障与发布流程合并为一体化交付关卡
+
 ### 团队流程图
 
 ```
 产品总监（用户）
     │
     ▼
-┌─────────────┐
-│  PO Agent 📋 │  需求拆解 / Backlog 管理 / Sprint 计划
-└──────┬──────┘
-       │
-       ▼
 ┌──────────────────┐
-│ Scrum Master 🏃  │  Sprint 启动 / 每日站会 / 障碍清除
+│  PO Agent 📋🏃   │  需求拆解 / Backlog 管理 / Sprint 计划 / 站会 / 障碍清除
 └──────┬───────────┘
        │
-       ▼
-┌─────────────┐
-│ Dev Agent 💻 │  代码生成 / Code Review / Git 操作 / 技术文档
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐
-│ QE Agent 🔬 │  测试用例 / 自动化测试 / Bug 报告 / 回归测试
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────┐
-│ Release Agent 🚀 │  CI/CD 流水线 / 发布日志 / 部署管理
-└─────────────────┘
+       ├──────────────┐
+       ▼              ▼
+┌─────────────┐  ┌──────────────────┐
+│ Dev Agent 💻 │  │ Quality Agent 🔬🚀 │
+│              │  │                    │
+│ 代码生成     │  │ 测试用例 / 自动化  │
+│ Code Review  │  │ Bug 报告 / 回归    │
+│ Git 操作     │  │ CI/CD / Changelog  │
+│ 技术文档     │  │ 发布部署           │
+└──────┬──────┘  └────────┬──────────┘
+       │                  │
+       └────────┬─────────┘
+                ▼
+          交付给用户 ✅
 ```
 
 ### Agent 通信矩阵
 
 | 发送方 | 接收方 | 通信内容 |
 |--------|--------|----------|
-| PO Agent | Scrum Master | Sprint Backlog |
-| Scrum Master | Dev Agent | 开发任务 |
-| Scrum Master | QE Agent | 测试任务 |
-| Dev Agent | QE Agent | 代码提交通知 |
-| QE Agent | Dev Agent | Bug 反馈 |
-| QE Agent | Release Agent | 发布就绪确认 |
+| PO Agent | Dev Agent | 开发任务分配 |
+| PO Agent | Quality Agent | 测试任务分配 |
+| Dev Agent | Quality Agent | 代码提交通知 |
+| Quality Agent | Dev Agent | Bug 反馈与改进建议 |
+| Quality Agent | PO Agent | 测试报告 / 进度汇报 |
 
 ## 👥 Agent 角色介绍
 
-### 📋 PO Agent — 产品负责人
-负责将产品愿景转化为可执行的需求，维护产品 Backlog，划定 Sprint 范围。
+### 📋🏃 PO Agent — 产品负责人 + 流程调度
 
-### 🏃 Scrum Master — 敏捷教练
-保障敏捷流程顺利执行，组织 Sprint 启动、每日站会，清除团队障碍。
+负责将产品愿景转化为可执行的需求，维护产品 Backlog，划定 Sprint 范围。同时承担 Scrum Master 职责，组织 Sprint 启动、每日站会，清除团队障碍。
 
 ### 💻 Dev Agent — 全栈开发者
+
 将需求转化为高质量代码，负责代码生成、Code Review、Git 操作和技术文档编写。
 
-### 🔬 QE Agent — 质量工程师
-保障产品质量，负责测试用例设计、自动化测试、Bug 记录和回归测试。
+### 🔬🚀 Quality Agent — 质量守护师 + 发布工程师
 
-### 🚀 Release Agent — 发布工程师
-管理产品交付的最后关卡，负责 CI/CD 流水线、环境部署和发布日志生成。
+综合保障产品的质量、安全和发布流程。负责测试用例设计、自动化测试、Bug 记录、回归测试，以及 CI/CD 流水线管理、发布日志生成和部署交付。
 
 ## 🛠 Skills 体系（16 个）
+
+Skills 按所属角色分组管理，Scrum Master 技能归入 PO，Release 技能归入 Quality。
 
 | Agent | Skills | 说明 |
 |-------|--------|------|
 | PO | `po-requirement-breakdown` | 需求拆解为 User Story |
 | | `po-backlog-management` | Backlog 管理与优先级排序 |
 | | `po-sprint-planning` | Sprint 范围划定与计划 |
-| Scrum Master | `scrum-sprint-kickoff` | Sprint 启动与任务分配 |
+| | `scrum-sprint-kickoff` | Sprint 启动与任务分配 |
 | | `scrum-standup` | 每日站会与进度跟踪 |
 | | `scrum-blocker-resolution` | 障碍识别与解决 |
 | Dev | `dev-code-generation` | 高质量代码生成 |
 | | `dev-code-review` | 代码审查与改进建议 |
 | | `dev-git-operations` | Git commit / PR / 分支管理 |
 | | `dev-tech-docs` | 技术文档生成与维护 |
-| QE | `qe-test-case-gen` | 测试用例设计 |
+| Quality | `qe-test-case-gen` | 测试用例设计 |
 | | `qe-automation-test` | 自动化测试脚本编写与执行 |
 | | `qe-bug-report` | Bug 记录与跟踪 |
 | | `qe-regression-test` | 回归测试与修复确认 |
-| Release | `release-cicd` | CI/CD 流水线管理 |
+| | `release-cicd` | CI/CD 流水线管理 |
 | | `release-changelog` | 发布日志自动生成 |
 
 ## 📁 项目结构
@@ -102,7 +102,7 @@ agile-ai-team/
 ├── README.md
 ├── .gitignore
 ├── agents/
-│   ├── po/                    # PO Agent — 产品负责人
+│   ├── po/                    # PO Agent — 产品负责人 + Scrum Master
 │   │   └── workspace/
 │   │       ├── AGENTS.md      # 工作指令与流程
 │   │       ├── SOUL.md        # 性格与边界
@@ -110,27 +110,30 @@ agile-ai-team/
 │   │       ├── TOOLS.md       # 工具与通信说明
 │   │       ├── MEMORY.md      # 长期记忆
 │   │       └── HEARTBEAT.md   # 心跳配置
-│   ├── scrum-master/          # Scrum Master — 敏捷教练
 │   ├── dev/                   # Dev Agent — 全栈开发者
-│   ├── qe/                    # QE Agent — 质量工程师
-│   └── release/               # Release Agent — 发布工程师
+│   │   └── workspace/
+│   └── quality/               # Quality Agent — 质量守护 + 发布工程
+│       └── workspace/
 └── skills/
-    ├── po-requirement-breakdown/
-    ├── po-backlog-management/
-    ├── po-sprint-planning/
-    ├── scrum-sprint-kickoff/
-    ├── scrum-standup/
-    ├── scrum-blocker-resolution/
-    ├── dev-code-generation/
-    ├── dev-code-review/
-    ├── dev-git-operations/
-    ├── dev-tech-docs/
-    ├── qe-test-case-gen/
-    ├── qe-automation-test/
-    ├── qe-bug-report/
-    ├── qe-regression-test/
-    ├── release-cicd/
-    └── release-changelog/
+    ├── po/                    # PO 相关技能（含 Scrum Master）
+    │   ├── po-requirement-breakdown/
+    │   ├── po-backlog-management/
+    │   ├── po-sprint-planning/
+    │   ├── scrum-sprint-kickoff/
+    │   ├── scrum-standup/
+    │   └── scrum-blocker-resolution/
+    ├── dev/                   # Dev 相关技能
+    │   ├── dev-code-generation/
+    │   ├── dev-code-review/
+    │   ├── dev-git-operations/
+    │   └── dev-tech-docs/
+    └── quality/               # Quality 相关技能（含 Release）
+        ├── qe-test-case-gen/
+        ├── qe-automation-test/
+        ├── qe-bug-report/
+        ├── qe-regression-test/
+        ├── release-cicd/
+        └── release-changelog/
 ```
 
 ## 🔧 技术栈
@@ -143,11 +146,12 @@ agile-ai-team/
 
 ## 💡 设计理念
 
-1. **角色隔离** — 每个 Agent 有明确的职责边界，不越权、不重叠
-2. **记忆独立** — 每个 Agent 维护独立的记忆系统，模拟真实团队成员的认知
-3. **人格化** — 每个 Agent 有独特的性格定义，影响其沟通风格和决策方式
-4. **流程驱动** — 基于敏捷 Scrum 框架设计完整的工作流
-5. **可扩展** — 可根据需要添加新的 Agent 角色或 Skills
+1. **角色精简** — PO 融合 Scrum Master，Quality 融合 Release，减少沟通层级
+2. **角色隔离** — 每个 Agent 有明确的职责边界，不越权、不重叠
+3. **记忆独立** — 每个 Agent 维护独立的记忆系统，模拟真实团队成员的认知
+4. **人格化** — 每个 Agent 有独特的性格定义，影响其沟通风格和决策方式
+5. **流程驱动** — 基于敏捷 Scrum 框架设计完整的工作流
+6. **可扩展** — 可根据需要添加新的 Agent 角色或 Skills
 
 ## 📄 License
 
